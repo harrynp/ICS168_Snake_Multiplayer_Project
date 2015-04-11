@@ -48,11 +48,11 @@ class Snake:
             self._parts.append(pygame.Rect(second_part.left + 15, second_part.top, 15, 15))
         elif first_part.top - second_part.top == 15:
             self._parts.append(pygame.Rect(second_part.left, second_part.top - 15, 15, 15))
-        elif first_part.top -second_part.top == -15:
+        elif first_part.top - second_part.top == -15:
             self._parts.append(pygame.Rect(second_part.left, second_part.top + 15, 15, 15))
 
     def update(self, direction):
-        for i in range(len(self._parts) - 1, -1):
+        for i in range(len(self._parts) - 1, -1, -1):
             self._parts[i].left = self._parts[i - 1].left
             self._parts[i].top = self._parts[i - 1].top
 
