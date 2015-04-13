@@ -3,13 +3,13 @@ import pygame
 from random import randint
 
 pygame.init()
-window = pygame.display.set_mode((800, 600))
+screen = pygame.display.set_mode((800, 600))
 pygame.display.set_caption("Snake")
 black = (0, 0, 0)
 white = (255, 255, 255)
 clock = pygame.time.Clock()
 borders = [pygame.Rect(0, 0, 2, 600), pygame.Rect(0, 0, 800, 2), pygame.Rect(798, 0, 2, 600), pygame.Rect(0, 598, 800, 2)]
-
+font = pygame.font.Font(None, 36)
 gameLoop = True
 
 class Snake:
@@ -72,16 +72,16 @@ class Snake:
             self._head.top += 15
 
     def render(self):
-        pygame.draw.rect(window, white, self._head)
+        pygame.draw.rect(screen, white, self._head)
         for segment in self._parts:
-            pygame.draw.rect(window, white, segment)
+            pygame.draw.rect(screen, white, segment)
 
 snake = Snake(400, 300, "down")
 pellet = pygame.Rect(randint(10, 790), randint(10, 590), 15, 15)
 
 while gameLoop:
     for border in borders:
-        pygame.draw.rect(window, white, border)
+        pygame.draw.rect(screen, white, border)
     move = ""
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -95,15 +95,35 @@ while gameLoop:
                 move = "up"
             if event.key == pygame.K_DOWN:
                 move = "down"
-    window.fill(black)
+    screen.fill(black)
     snake.update(move)
     snake.render()
-    pygame.draw.rect(window, white, pellet)
+    pygame.draw.rect(screen, white, pellet)
     pygame.display.flip()
     clock.tick(5)
     temp = snake.detect_collision()
     if snake.detect_collision() != -1 or snake.detect_border() != -1:
-        gameLoop = False
+        gameOverLoop = True
+        snake.render()
+        text = font.render("Game Over.  Press 'r' to restart or 'q' to quit.", 1, white)
+        textpos = text.get_rect()
+        textpos.centerx = screen.get_rect().centerx
+        textpos.centery = screen.get_rect().centery
+        screen.blit(text, textpos)
+        while gameOverLoop:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    gameLoop = False
+                    gameOverLoop = False
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_r:
+                        snake = Snake(400, 300, "down")
+                        pellet = pygame.Rect(randint(10, 790), randint(10, 590), 15, 15)
+                        gameOverLoop = False
+                    if event.key == pygame.K_q:
+                        gameLoop = False
+                        gameOverLoop = False
+            pygame.display.flip()
     if snake.get_head().colliderect(pellet):
         snake.add_part()
         pellet = pygame.Rect(randint(10, 790), randint(10, 590), 15, 15)
