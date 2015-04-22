@@ -25,9 +25,9 @@ class Score:
             self._high_score = int(high_score_file.read())
             high_score_file.close()
         except IOError:
-            print("No High Score found, Starting at 0")
+            print("No high score found, Starting at 0")
         except ValueError:
-            print("High Score file is not an int, starting at 0")
+            print("High score file is not an int, starting at 0")
 
     def save_high_score(self):
         if self._high_score_changed:
@@ -36,6 +36,7 @@ class Score:
                 high_score_file.write(str(self._high_score))
                 high_score_file.close()
                 self._high_score = self._current_score
+                print("High score saved.")
             except IOError:
                 print("Unable to save high score.")
 
@@ -104,7 +105,9 @@ class Snake:
         self._parts[0].top = self._head.top
 
         if direction != "":
-            self._direction = direction
+            if not (self._direction == "left" and direction == "right" or self._direction == "right" and direction == "left" or self._direction == "up" and direction == "down" or self._direction == "down" and direction == "up"):
+                self._direction = direction
+            # self._direction = direction
 
         if self._direction == "right":
             self._head.left += 15
@@ -115,14 +118,18 @@ class Snake:
         elif self._direction == "down":
             self._head.top += 15
 
+
     def render(self):
         pygame.draw.rect(screen, white, self._head)
         for segment in self._parts:
             pygame.draw.rect(screen, white, segment)
 
 snake = Snake(400, 300, "down")
-pellet = pygame.Rect(randint(10, 790), randint(10, 590), 15, 15)
+# pellet = pygame.Rect(randint(10, 790), randint(10, 590), 15, 15)
+pellet = pygame.Rect(randint(2, 53) * 15, randint(2, 39) * 15, 15, 15)
 score = Score("high_score.txt")
+
+speed = 10
 
 while gameLoop:
     for border in borders:
@@ -140,6 +147,10 @@ while gameLoop:
                 move = "up"
             if event.key == pygame.K_DOWN:
                 move = "down"
+            if event.key == pygame.K_w:
+                speed *= 2
+            if event.key == pygame.K_s:
+                speed /= 2
     screen.fill(black)
     snake.update(move)
     snake.render()
@@ -149,7 +160,7 @@ while gameLoop:
     score_text_pos.centerx = screen.get_rect().centerx
     screen.blit(score_text, score_text_pos)
     pygame.display.flip()
-    clock.tick(5)
+    clock.tick(speed)
     if snake.detect_collision() != -1 or snake.detect_border() != -1:
         gameOverLoop = True
         score.save_high_score()
@@ -166,7 +177,8 @@ while gameLoop:
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_r:
                         snake = Snake(400, 300, "down")
-                        pellet = pygame.Rect(randint(10, 790), randint(10, 590), 15, 15)
+                        # pellet = pygame.Rect(randint(10, 790), randint(10, 590), 15, 15)
+                        pellet = pygame.Rect(randint(2, 53) * 15, randint(2, 39) * 15, 15, 15)
                         score.reset_score()
                         gameOverLoop = False
                     if event.key == pygame.K_q:
@@ -180,3 +192,4 @@ while gameLoop:
 
 score.save_high_score()
 pygame.quit()
+
