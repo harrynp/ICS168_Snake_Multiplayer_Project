@@ -11,8 +11,10 @@ class Controller:
 
     def notify(self, event):
         e = None
-        if self._game_state == "run":
-            if isinstance(event, events.TickEvent):
+        if isinstance(event, events.GameOverEvent):
+            self._game_state = "game over"
+        elif isinstance(event, events.TickEvent):
+            if self._game_state == "run":
                 # Handles input events
                 for event in pygame.event.get():
                     if event.type == pygame.QUIT:
@@ -31,16 +33,19 @@ class Controller:
                     elif event.type == pygame.MOUSEBUTTONDOWN:
                         if event.button == 1:
                             e = events.MouseEvent(event.pos)
-        elif self._game_state == "game over":
-            for event in pygame.event.get():
-                if event.type == pygame.Quit:
-                    e = events.QuitEvent()
-                if event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_r:
-                        e = events.RestartEvent()
-                    elif event.key == pygame.K_q:
+            elif self._game_state == "game over":
+                for event in pygame.event.get():
+                    if event.type == pygame.QUIT:
                         e = events.QuitEvent()
+                    elif event.type == pygame.KEYDOWN:
+                        if event.key == pygame.K_r:
+                            e = events.RestartEvent()
+                            self._game_state = "run"
+                        elif event.key == pygame.K_q:
+                            e = events.QuitEvent()
+                    elif event.type == pygame.MOUSEBUTTONDOWN:
+                        if event.button == 1:
+                            e = events.MouseEvent(event.pos)
         if e:
             self._event_manager.post(e)
-        elif isinstance(event, events.GameOverEvent):
-            self._game_state = "game over"
+
