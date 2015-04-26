@@ -4,7 +4,6 @@ import events
 from random import randint
 import json
 
-json_encoder = json.JSONEncoder()
 
 class Score:
 
@@ -80,9 +79,10 @@ class Snake:
     def get_parts(self):
         return self._parts
 
-    def get_head_and_parts(self):
-        result = [self._head]
-        result.extend(self._parts)
+    def get_head_and_parts_coordinates(self):
+        result = [self._head.center]
+        for part in self._parts:
+            result.append(self._head.center)
         return result
 
     def add_part(self):
@@ -172,6 +172,12 @@ class Game:
     def get_pellets(self):
         return self._pellets
 
+    def get_pellet_coordinates(self):
+        result = []
+        for pellet in self._pellets:
+            result.append(pellet.center)
+        return result
+
     def get_score(self):
         return self._score.get_current_score(), self._score.get_high_score()
 
@@ -183,5 +189,8 @@ class Game:
         print(json.dumps(loaded_json, sort_keys=True, indent=4))
 
     def send_update(self):
-        json_string = json_encoder.encode(dict("snake_position", self._snakes[0].get_head_and_parts()), ("pellets", self._pellets), ("score", self._score.get_scores()), ("game_state", self._game_state))
+        json_string = json.JSONEncoder().encode(dict([("snakes", self._snakes[0].get_head_and_parts_coordinates()),
+                                                      ("pellets", self.get_pellet_coordinates()),
+                                                      ("score", self._score.get_scores()),
+                                                      ("game_state", self._game_state)]))
         return json_string

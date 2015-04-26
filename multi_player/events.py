@@ -51,3 +51,12 @@ class MouseEvent(Event):
 class RestartEvent(Event):
     def __init__(self):
         self._name = "Restart Event"
+
+
+class ServerUpdateRecieved(Event):
+    def __init(self, json_string):
+        self._name = "Server Update Recieved"
+        self._json_string = json_string
+
+    def get_json_string(self):
+        return self._json_string
