@@ -1,14 +1,20 @@
 __author__ = 'Harry'
-import socket, asyncore
+import game
+import asyncore
+import socket
 
-class EchoHandler(asyncore.dispatcher_with_send):
+snake_game = game.Game()
+
+
+class MessageHandler(asyncore.dispatcher_with_send):
     def handle_read(self):
         data = self.recv(8192)
         if data:
-            self.send(data)
+            self.send("Move recieved")
 
 
-class EchoServer(asyncore.dispatcher):
+class Server(asyncore.dispatcher):
+
     def __init__(self, host, port):
         asyncore.dispatcher.__init__(self)
         self.create_socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -22,8 +28,8 @@ class EchoServer(asyncore.dispatcher):
             pass
         else:
             sock, addr = pair
-            print("Incoming connection from" + addr)
-            handler = EchoHandler(sock)
+            print("Incoming conection from {}".format(repr(addr)))
+            handler = MessageHandler(sock)
 
-server = EchoServer('localhost', 8000)
+server = Server('localhost', 8000)
 asyncore.loop()

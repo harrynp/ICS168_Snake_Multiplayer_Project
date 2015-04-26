@@ -28,8 +28,8 @@ class Controller:
                             e = events.MoveEvent("up")
                         elif event.key == pygame.K_DOWN:
                             e = events.MoveEvent("down")
-                        elif event.key == pygame.K_q:
-                            e = events.QuitEvent()
+                        # elif event.key == pygame.K_q:
+                        #     e = events.QuitEvent()
                     elif event.type == pygame.MOUSEBUTTONDOWN:
                         if event.button == 1:
                             e = events.MouseEvent(event.pos)

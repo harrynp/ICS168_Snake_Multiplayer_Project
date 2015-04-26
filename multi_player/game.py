@@ -2,7 +2,9 @@ __author__ = 'Harry'
 import pygame
 import events
 from random import randint
+import json
 
+json_encoder = json.JSONEncoder()
 
 class Score:
 
@@ -36,6 +38,9 @@ class Score:
 
     def get_current_score(self):
         return self._current_score
+
+    def get_scores(self):
+        return [self._current_score, self._high_score_file]
 
     def increment_current_score(self):
         self._current_score += 1
@@ -74,6 +79,11 @@ class Snake:
 
     def get_parts(self):
         return self._parts
+
+    def get_head_and_parts(self):
+        result = [self._head]
+        result.extend(self._parts)
+        return result
 
     def add_part(self):
         if len(self._parts) == 1:
@@ -167,3 +177,11 @@ class Game:
 
     def get_game_state(self):
         return self._game_state
+
+    def recieve_message(self, message):
+        loaded_json = json.loads(message)
+        print(json.dumps(loaded_json, sort_keys=True, indent=4))
+
+    def send_update(self):
+        json_string = json_encoder.encode(dict("snake_position", self._snakes[0].get_head_and_parts()), ("pellets", self._pellets), ("score", self._score.get_scores()), ("game_state", self._game_state))
+        return json_string
