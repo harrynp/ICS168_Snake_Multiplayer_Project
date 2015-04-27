@@ -60,3 +60,40 @@ class ServerUpdateReceived(Event):
 
     def get_json_string(self):
         return self._json_string
+
+
+class LoginRequest(Event):
+    def __init__(self):
+        self._name = "Login Request"
+
+
+class LoginAttempt(Event):
+    def __init__(self, username, password):
+        self._name = "Login Attempt"
+        self._username = username
+        self._password = password
+
+    def get_username(self):
+        return self._username
+
+    def get_password(self):
+        return self._password
+
+
+class LoginSuccess(Event):
+    def __init__(self):
+        self._name = "Login Success"
+
+
+class LoginFail(Event):
+    def __init__(self):
+        self._name = "Login Fail"
+
+class UserCreated(Event):
+    def __init__(self):
+        self._name = "User Created"
+
+
+class GameStart(Event):
+    def __init__(self):
+        self._name = "Game Start"

@@ -3,7 +3,49 @@ import pygame
 import events
 from random import randint
 import json
+import sqlite3 as lite
 
+db = lite.connect('login.db')
+query = db.cursor()
+
+def login_check(username, password):
+    """return 0 if username is in database/pass incorrect, 1 if info correct, 2 is username not in db"""
+    #with is like a fancy 'try+catch' for db
+    with db:
+        query.execute("CREATE TABLE IF NOT EXISTS Users(username TEXT, password TEXT, h_score INT)")
+        #check if username exists in db
+        query.execute("SELECT * FROM Users WHERE username = ?", (username, ))
+        check=query.fetchone()
+
+        #if username does not exist, add to users table in db
+        if check is None:
+            print("Username does not exist")
+            return 2
+            #code below inserts the new user into db
+            query.execute("INSERT INTO Users VALUES(?, ?, ?)", (username, password, 0))
+        else:
+            #if username exists, check if pass correct
+            query.execute("SELECT * FROM Users WHERE username = ? AND password = ?", (username, password, ))
+            check=query.fetchone()
+
+            #if wrong password
+            if check is None:
+                print("Wrong password")
+                return 0
+            #else success
+            else:
+                return 1
+
+
+def update_hscore(USERNAME, H_SCORE):
+    with db:
+        query.execute("UPDATE Users SET h_score = ? WHERE username = ?", (H_SCORE, USERNAME))
+
+def get_hscore(USERNAME):
+    with db:
+        query.execute("SELECT h_score FROM Users WHERE username = ?", (USERNAME, ))
+        score = query.fetchone()
+        return score
 
 class Score:
 
@@ -165,6 +207,14 @@ class Game:
             self._snakes.append(Snake(400, 300, "down", self._event_manager))
             self._score.reset_score()
             self._game_state = "run"
+        elif isinstance(event, events.LoginAttempt):
+            enum = login_check(event.get_username(), event.get_password())
+            if enum == 0:
+                self._event_manager.post(events.LoginFail())
+            elif enum == 1:
+                self._event_manager.post(events.LoginSuccess())
+            elif enum == 2:
+                self._event_manager.post(events.UserCreated())
 
     def get_snakes(self):
         return self._snakes
