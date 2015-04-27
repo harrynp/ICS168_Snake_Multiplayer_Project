@@ -36,7 +36,12 @@ def login_check(username, password):
             else:
                 return 1
 
-
+def print_db(self):
+    with db:
+        query.execute("SELECT * FROM Users")
+        data = query.fetchall()
+        print(data)
+    
 def update_hscore(USERNAME, H_SCORE):
     with db:
         query.execute("UPDATE Users SET h_score = ? WHERE username = ?", (H_SCORE, USERNAME))
