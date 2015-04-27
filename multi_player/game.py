@@ -15,7 +15,7 @@ def login_check(username, password):
     with db:
         query.execute("CREATE TABLE IF NOT EXISTS Users(username TEXT, password TEXT, h_score INT)")
         #check if username exists in db
-        query.execute("SELECT * FROM Users WHERE username = ?", (username))
+        query.execute("SELECT * FROM Users WHERE username = ?", (username, ))
         check=query.fetchone()
 
         #if username does not exist, add to users table in db
@@ -26,7 +26,7 @@ def login_check(username, password):
             query.execute("INSERT INTO Users VALUES(?, ?, ?)", (username, password, 0))
         else:
             #if username exists, check if pass correct
-            query.execute("SELECT * FROM Users WHERE username = ? AND password = ?", (username, password))
+            query.execute("SELECT * FROM Users WHERE username = ? AND password = ?", (username, password, ))
             check=query.fetchone()
 
             #if wrong password
