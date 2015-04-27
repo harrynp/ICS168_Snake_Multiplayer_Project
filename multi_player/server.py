@@ -23,6 +23,7 @@ class MessageHandler(asynchat.async_chat):
 
     def found_terminator(self):
         # self.push(bytes("Message Received\n", 'UTF-8'))
+        print("Message recieved: " + self._received_data)
         self._event_manager.post(events.MoveEvent(self._received_data))
         self._received_data = ""
 
@@ -30,15 +31,9 @@ class MessageHandler(asynchat.async_chat):
         if isinstance(event, events.TickEvent):
             data = bytes((self._game.send_update() + "\n"), 'UTF-8')
             self.push(data)
-            # self.push(self._game.send_update() + "\n")
-
-    # def handle_read(self):
-    #     data = self.recv(8192)
-    #     if data:
-    #         self.send("Move recieved")
 
 
-class Server(asyncore.dispatcher_with_send):
+class Server(asyncore.dispatcher):
 
     def __init__(self, host, port, eventManager, game, game_thread):
         asyncore.dispatcher.__init__(self)
@@ -56,19 +51,6 @@ class Server(asyncore.dispatcher_with_send):
         print("Incoming conection from {}".format(repr(addr)))
         handler = MessageHandler(sock, addr, self._event_manager, self._game)
         self._game_thread.start()
-
-
-    # def writable(self):
-    #     return len(self.buffer) > 0
-    #
-    # def handle_write(self):
-    #     sent = self.send(self.buffer)
-    #     self.buffer = self.buffer[sent:]
-
-    # def notify(self, event):
-    #     if isinstance(event, events.TickEvent):
-    #         # data = bytes((self._game.send_update() + "\n"), 'UTF-8')
-    #         self.send(self._game.send_update() + "\n")
 
 
 def main():

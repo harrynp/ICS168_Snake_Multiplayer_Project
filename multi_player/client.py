@@ -65,7 +65,7 @@ class Client(asynchat.async_chat):
             self.close()
         elif isinstance(event, events.MoveEvent):
             print("Message: {} sent".format(event.get_direction()))
-            self.push(bytes(event.get_direction(), 'UTF-8'))
+            self.push(bytes(event.get_direction() + "\n", 'UTF-8'))
 
 
 def main():
