@@ -39,7 +39,7 @@ class Score:
         return self._current_score
 
     def get_scores(self):
-        return [self._current_score, self._high_score_file]
+        return [self._current_score, self._high_score]
 
     def increment_current_score(self):
         self._current_score += 1
@@ -80,9 +80,9 @@ class Snake:
         return self._parts
 
     def get_head_and_parts_coordinates(self):
-        result = [self._head.center]
+        result = [[self._head.left, self._head.top]]
         for part in self._parts:
-            result.append(self._head.center)
+            result.append([part.left, part.top])
         return result
 
     def add_part(self):
@@ -175,7 +175,7 @@ class Game:
     def get_pellet_coordinates(self):
         result = []
         for pellet in self._pellets:
-            result.append(pellet.center)
+            result.append([pellet.left, pellet.top])
         return result
 
     def get_score(self):
@@ -184,13 +184,13 @@ class Game:
     def get_game_state(self):
         return self._game_state
 
-    def recieve_message(self, message):
+    def receive_message(self, message):
         loaded_json = json.loads(message)
         print(json.dumps(loaded_json, sort_keys=True, indent=4))
 
     def send_update(self):
-        json_string = json.JSONEncoder().encode(dict([("snakes", self._snakes[0].get_head_and_parts_coordinates()),
-                                                      ("pellets", self.get_pellet_coordinates()),
-                                                      ("score", self._score.get_scores()),
-                                                      ("game_state", self._game_state)]))
+        json_string = json.dumps(dict([("snakes", self._snakes[0].get_head_and_parts_coordinates()),
+                                       ("pellets", self.get_pellet_coordinates()),
+                                       ("scores", self._score.get_scores()),
+                                       ("game_state", self._game_state)]))
         return json_string

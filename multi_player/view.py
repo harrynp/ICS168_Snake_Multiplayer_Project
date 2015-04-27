@@ -21,7 +21,7 @@ class PygameView:
         pygame.display.flip()
 
     def notify(self, event):
-        if isinstance(event, events.ServerUpdateRecieved):
+        if isinstance(event, events.ServerUpdateReceived):
             #Draw Everything
             self._screen.blit(self._background, (0, 0))
             game_data = json.loads(event.get_json_string())
@@ -30,15 +30,12 @@ class PygameView:
             scores = game_data["scores"]
             game_state = game_data["game_state"]
             snake_surface = pygame.Surface(self._screen.get_size())
-            for snake in snakes:
-                for part_center in snake:
-                    snake_part = pygame.Rect(400, 300, 15, 15)
-                    snake_part.center = part_center
-                    pygame.draw.rect(snake_surface, white, snake_part)
-            for pellet_center in pellets:
-                pellet = pygame.Rect(400, 300, 15, 15)
-                pellet.center = pellet_center
-                pygame.draw.rect(snake_surface, white, pellet)
+            for part in snakes:
+                snake_part = pygame.Rect(part[0], part[1], 15, 15)
+                pygame.draw.rect(snake_surface, white, snake_part)
+            for pellet in pellets:
+                p = pygame.Rect(pellet[0], pellet[1], 15, 15)
+                pygame.draw.rect(snake_surface, white, p)
             score_text = self._font.render("Current Score: " + str(scores[0]) + "    High Score: " + str(scores[1]), 1,
                                            white)
             score_text_pos = score_text.get_rect()

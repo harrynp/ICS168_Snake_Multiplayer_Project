@@ -49,21 +49,22 @@ class Client(asynchat.async_chat):
         self.connect((host, port))
         self._event_manager = eventManager
         self._event_manager.register_listener(self)
-        self.set_terminator("\n")
-        self._recieved_data = ""
-        self._pyagame_view = pygameView
+        self.set_terminator(b'\n')
+        self._received_data = ""
+        self._pygame_view = pygameView
 
     def collect_incoming_data(self, data):
-        self._recieved_data += data.decode('UTF-8')
+        self._received_data += data.decode('UTF-8')
 
     def found_terminator(self):
-        self._event_manager.post(events.ServerUpdateRecieved(self._recieved_data.strip('\n')))
-        self._recieved_data = ""
+        self._event_manager.post(events.ServerUpdateReceived(self._received_data.strip('\n')))
+        self._received_data = ""
 
     def notify(self, event):
         if isinstance(event, events.QuitEvent):
             self.close()
         elif isinstance(event, events.MoveEvent):
+            print("Message: {} sent".format(event.get_direction()))
             self.push(bytes(event.get_direction(), 'UTF-8'))
 
 

@@ -13,7 +13,7 @@ class Controller:
         e = None
         if isinstance(event, events.GameOverEvent):
             self._game_state = "game over"
-        elif isinstance(event, events.TickEvent):
+        elif isinstance(event, events.ServerUpdateReceived):
             if self._game_state == "run":
                 # Handles input events
                 for event in pygame.event.get():

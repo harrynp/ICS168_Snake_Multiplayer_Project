@@ -15,16 +15,16 @@ class MessageHandler(asynchat.async_chat):
         self._event_manager = eventManager
         self._event_manager.register_listener(self)
         self._game = game
-        self.set_terminator("\n")
-        self._recieved_data = ""
+        self.set_terminator(b'\n')
+        self._received_data = ""
 
     def collect_incoming_data(self, data):
-        self._recieved_data += data.decode('UTF-8')
+        self._received_data += data.decode('UTF-8')
 
     def found_terminator(self):
-        self.push(bytes("Message Recieved\n", 'UTF-8'))
-        self._event_manager.post(events.MoveEvent(self._recieved_data))
-        self._recieved_data = ""
+        # self.push(bytes("Message Received\n", 'UTF-8'))
+        self._event_manager.post(events.MoveEvent(self._received_data))
+        self._received_data = ""
 
     def notify(self, event):
         if isinstance(event, events.TickEvent):

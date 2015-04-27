@@ -53,9 +53,9 @@ class RestartEvent(Event):
         self._name = "Restart Event"
 
 
-class ServerUpdateRecieved(Event):
-    def __init(self, json_string):
-        self._name = "Server Update Recieved"
+class ServerUpdateReceived(Event):
+    def __init__(self, json_string):
+        self._name = "Server Update Received"
         self._json_string = json_string
 
     def get_json_string(self):
