@@ -10,7 +10,6 @@ query = db.cursor()
 
 def login_check(username, password):
     """return 0 if username is in database/pass incorrect, 1 if info correct, 2 is username not in db"""
-    print(username)
     #with is like a fancy 'try+catch' for db
     with db:
         query.execute("CREATE TABLE IF NOT EXISTS Users(username TEXT, password TEXT, h_score INT)")
@@ -21,9 +20,9 @@ def login_check(username, password):
         #if username does not exist, add to users table in db
         if check is None:
             print("Username does not exist")
-            return 2
             #code below inserts the new user into db
             query.execute("INSERT INTO Users VALUES(?, ?, ?)", (username, password, 0))
+            return 2
         else:
             #if username exists, check if pass correct
             query.execute("SELECT * FROM Users WHERE username = ? AND password = ?", (username, password, ))
