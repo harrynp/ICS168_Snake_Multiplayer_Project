@@ -7,6 +7,7 @@ import asyncore
 import asynchat
 import socket
 import json
+import hashlib
 
 
 # class Client(asyncore.dispatcher):
@@ -59,7 +60,7 @@ class Client(asynchat.async_chat):
 
     def handle_connect(self):
             self._username = input("Please enter username: ")
-            self._password = input("Please enter password: ")
+            self._password = hashlib.sha512(bytes(input("Please enter password: "), 'UTF-8')).hexdigest()
             self.push(bytes("LOGIN_ATTEMPT " + json.dumps(dict([("username", self._username),
                                                                 ("password", self._password)])) + "\n", 'UTF-8'))
 
@@ -76,13 +77,13 @@ class Client(asynchat.async_chat):
             self._event_manager.post(events.ServerUpdateReceived(data))
         elif key == "LOGIN_REQUEST":
             self._username = input("Please enter username: ")
-            self._password = input("Please enter password: ")
+            self._password = hashlib.sha512(bytes(input("Please enter password: "), 'UTF-8')).hexdigest()
             self.push(bytes("LOGIN_ATTEMPT " + json.dumps(dict([("username", self._username),
                                                                 ("password", self._password)])) + "\n", 'UTF-8'))
         elif key == "LOGIN_FAIL":
             print("LOGIN FAILED")
             self._username = input("Please enter username: ")
-            self._password = input("Please enter password: ")
+            self._password = hashlib.sha512(bytes(input("Please enter password: "), 'UTF-8')).hexdigest()
             self.push(bytes("LOGIN_ATTEMPT " + json.dumps(dict([("username", self._username),
                                                                 ("password", self._password)])) + "\n", 'UTF-8'))
         elif key == "LOGIN_SUCCESS":

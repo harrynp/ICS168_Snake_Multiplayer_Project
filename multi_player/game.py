@@ -54,30 +54,15 @@ def get_hscore(USERNAME):
 
 class Score:
 
-    def __init__(self, high_score_file):
-        self._high_score_file = high_score_file
+    def __init__(self, username):
+        self._username = username
         self._current_score = 0
-        self._high_score = 0
+        self._high_score = get_hscore(self._username)
         self._high_score_changed = False
-        try:
-            high_score_file = open(self._high_score_file, "r")
-            self._high_score = int(high_score_file.read())
-            high_score_file.close()
-        except IOError:
-            print("No high score found, Starting at 0")
-        except ValueError:
-            print("High score file is not an int, starting at 0")
 
     def save_high_score(self):
         if self._high_score_changed:
-            try:
-                high_score_file = open(self._high_score_file, "w")
-                high_score_file.write(str(self._high_score))
-                high_score_file.close()
-                self._high_score = self._current_score
-                print("High score saved.")
-            except IOError:
-                print("Unable to save high score.")
+            update_hscore(self._username, self._current_score)
 
     def get_high_score(self):
         return self._high_score
@@ -179,7 +164,7 @@ class Game:
         self._pellets = []
         self._pellets.append(pygame.Rect(randint(2, 53) * 15, randint(2, 39) * 15, 15, 15))
         self._borders = [pygame.Rect(0, 0, 2, 600), pygame.Rect(0, 0, 800, 2), pygame.Rect(798, 0, 2, 600), pygame.Rect(0, 598, 800, 2)]
-        self._score = Score("high_score.txt")
+        self._score = None
         self._is_running = True
         self._game_state = "run"
 
@@ -214,6 +199,7 @@ class Game:
             self._game_state = "run"
         elif isinstance(event, events.LoginAttempt):
             enum = login_check(event.get_username(), event.get_password())
+            self._score = Score(event.get_username())
             if enum == 0:
                 self._event_manager.post(events.LoginFail())
             elif enum == 1:
