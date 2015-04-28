@@ -4,6 +4,9 @@ import events
 from random import randint
 import json
 import sqlite3 as lite
+import hashlib
+import base64
+import os
 
 db = lite.connect('login.db')
 query = db.cursor()
@@ -12,7 +15,8 @@ def login_check(username, password):
     """return 0 if username is in database/pass incorrect, 1 if info correct, 2 is username not in db"""
     #with is like a fancy 'try+catch' for db
     with db:
-        query.execute("CREATE TABLE IF NOT EXISTS Users(username TEXT, password TEXT, h_score INT)")
+        # query.execute("CREATE TABLE IF NOT EXISTS Users(username TEXT, password TEXT, h_score INT)")
+        query.execute("CREATE TABLE IF NOT EXISTS Users(username TEXT, hash TEXT, salt TEXT, h_score INT)")
         #check if username exists in db
         query.execute("SELECT * FROM Users WHERE username = ?", (username, ))
         check=query.fetchone()
@@ -21,11 +25,16 @@ def login_check(username, password):
         if check is None:
             print("Username does not exist")
             #code below inserts the new user into db
-            query.execute("INSERT INTO Users VALUES(?, ?, ?)", (username, password, 0))
+            salt = base64.b64encode(os.urandom(128)).decode('UTF-8')
+            hashed_password = hashlib.sha512(bytes(password + salt, 'UTF-8')).hexdigest()
+            query.execute("INSERT INTO Users VALUES(?, ?, ?, ?)", (username, hashed_password, salt, 0))
             return 2
         else:
             #if username exists, check if pass correct
-            query.execute("SELECT * FROM Users WHERE username = ? AND password = ?", (username, password, ))
+            query.execute("SELECT salt FROM Users WHERE username = ?", (username, ))
+            salt = query.fetchone()[0]
+            hashed_password = hashlib.sha512(bytes(password + salt, 'UTF-8')).hexdigest()
+            query.execute("SELECT * FROM Users WHERE username = ? AND hash = ?", (username, hashed_password, ))
             check=query.fetchone()
 
             #if wrong password
@@ -36,7 +45,7 @@ def login_check(username, password):
             else:
                 return 1
 
-def print_db(self):
+def print_db():
     with db:
         query.execute("SELECT * FROM Users")
         data = query.fetchall()
@@ -167,6 +176,7 @@ class Game:
         self._score = None
         self._is_running = True
         self._game_state = "run"
+        print_db()
 
     def run(self):
         while self._is_running:

@@ -75,8 +75,11 @@ def main():
     eventManager = event_manager.EventManager()
     snake_game = game.Game(eventManager)
     game_thread = threading.Thread(target=snake_game.run, name="Game Thread")
-    server = Server('localhost', 8000, eventManager, snake_game, game_thread)
-    asyncore.loop(1)
+    try:
+        server = Server('localhost', 8000, eventManager, snake_game, game_thread)
+        asyncore.loop(1)
+    except IndexError:
+        print("IndexError")
 
 if __name__ == '__main__':
     main()
