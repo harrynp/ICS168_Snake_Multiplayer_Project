@@ -35,9 +35,14 @@ class MessageHandler(asynchat.async_chat):
             json_data = json.loads(data)
             self._event_manager.post(events.LoginAttempt(json_data["username"], json_data["password"]))
         elif key == "MOVE":
-            self._event_manager.post(events.MoveEvent(self._received_data))
+            data = split_string[1]
+            self._event_manager.post(events.MoveEvent(data))
         elif key == "GAME_START":
             self._game_thread.start()
+        elif key == "QUIT":
+            self._event_manager.post(events.QuitEvent())
+        elif key == "RESTART":
+            self._event_manager.post(events.RestartEvent())
         self._received_data = ""
 
     def notify(self, event):
@@ -52,6 +57,8 @@ class MessageHandler(asynchat.async_chat):
             self.push(bytes("LOGIN_SUCCESS\n", 'UTF-8'))
         elif isinstance(event, events.UserCreated):
             self.push(bytes("USER_CREATED\n", 'UTF-8'))
+        elif isinstance(event, events.GameOverEvent):
+            self.push(bytes("GAME_OVER\n", 'UTF-8'))
 
 
 class Server(asyncore.dispatcher):
@@ -72,14 +79,15 @@ class Server(asyncore.dispatcher):
 
 
 def main():
-    eventManager = event_manager.EventManager()
-    snake_game = game.Game(eventManager)
-    game_thread = threading.Thread(target=snake_game.run, name="Game Thread")
     try:
+        eventManager = event_manager.EventManager()
+        snake_game = game.Game(eventManager)
+        game_thread = threading.Thread(target=snake_game.run, name="Game Thread")
         server = Server('localhost', 8000, eventManager, snake_game, game_thread)
         asyncore.loop(1)
-    except IndexError:
-        print("IndexError")
+    except:
+        pass
+
 
 if __name__ == '__main__':
     main()

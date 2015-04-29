@@ -41,7 +41,7 @@ class PygameView:
             score_text_pos = score_text.get_rect()
             score_text_pos.centerx = snake_surface.get_rect().centerx
             snake_surface.blit(score_text, score_text_pos)
-            if game_state == "game over":
+            if game_state == "game_over":
                 game_over_text = self._font.render("Game Over.  Press 'r' to restart or 'q' to quit.", 1, white)
                 game_over_text_pos = game_over_text.get_rect()
                 game_over_text_pos.centerx = snake_surface.get_rect().centerx
@@ -49,3 +49,5 @@ class PygameView:
                 snake_surface.blit(game_over_text, game_over_text_pos)
             self._screen.blit(snake_surface, (0, 0))
             pygame.display.flip()
+        elif isinstance(event, events.QuitEvent):
+            pygame.display.quit()

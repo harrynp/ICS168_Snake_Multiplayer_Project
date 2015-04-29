@@ -20,6 +20,8 @@ def login_check(username, password):
         #check if username exists in db
         query.execute("SELECT * FROM Users WHERE username = ?", (username, ))
         check=query.fetchone()
+        print("Login attempt from USERNAME: {}".format(password))
+        print_db()
 
         #if username does not exist, add to users table in db
         if check is None:
@@ -28,6 +30,7 @@ def login_check(username, password):
             salt = base64.b64encode(os.urandom(128)).decode('UTF-8')
             hashed_password = hashlib.sha512(bytes(password + salt, 'UTF-8')).hexdigest()
             query.execute("INSERT INTO Users VALUES(?, ?, ?, ?)", (username, hashed_password, salt, 0))
+            print_db()
             return 2
         else:
             #if username exists, check if pass correct
@@ -39,10 +42,12 @@ def login_check(username, password):
 
             #if wrong password
             if check is None:
+                print("Hashed password: {}".format(hashed_password))
                 print("Wrong password")
                 return 0
             #else success
             else:
+                print("Hashed password: {}".format(hashed_password))
                 return 1
 
 def print_db():
@@ -66,12 +71,14 @@ class Score:
     def __init__(self, username):
         self._username = username
         self._current_score = 0
-        self._high_score = get_hscore(self._username)
+        self._high_score = get_hscore(self._username)[0]
+        # self._high_score = 0
         self._high_score_changed = False
 
     def save_high_score(self):
         if self._high_score_changed:
-            update_hscore(self._username, self._current_score)
+            # update_hscore(self._username, self._current_score)
+            pass
 
     def get_high_score(self):
         return self._high_score
@@ -199,8 +206,9 @@ class Game:
             self._is_running = False
         elif isinstance(event, events.GameOverEvent):
             self._score.save_high_score()
-            self._game_state = "game over"
+            self._game_state = "game_over"
         elif isinstance(event, events.MoveEvent):
+            print(event.get_direction())
             self._snakes[0].update(event.get_direction())
         elif isinstance(event, events.RestartEvent):
             self._snakes.clear()

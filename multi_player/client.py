@@ -61,6 +61,7 @@ class Client(asynchat.async_chat):
     def handle_connect(self):
             self._username = input("Please enter username: ")
             self._password = hashlib.sha512(bytes(input("Please enter password: "), 'UTF-8')).hexdigest()
+            print("Hashed Password: {}".format(self._password))
             self.push(bytes("LOGIN_ATTEMPT " + json.dumps(dict([("username", self._username),
                                                                 ("password", self._password)])) + "\n", 'UTF-8'))
 
@@ -78,12 +79,14 @@ class Client(asynchat.async_chat):
         elif key == "LOGIN_REQUEST":
             self._username = input("Please enter username: ")
             self._password = hashlib.sha512(bytes(input("Please enter password: "), 'UTF-8')).hexdigest()
+            print("Hashed Password: {}".format(self._password))
             self.push(bytes("LOGIN_ATTEMPT " + json.dumps(dict([("username", self._username),
                                                                 ("password", self._password)])) + "\n", 'UTF-8'))
         elif key == "LOGIN_FAIL":
             print("LOGIN FAILED")
             self._username = input("Please enter username: ")
             self._password = hashlib.sha512(bytes(input("Please enter password: "), 'UTF-8')).hexdigest()
+            print("Hashed Password: {}".format(self._password))
             self.push(bytes("LOGIN_ATTEMPT " + json.dumps(dict([("username", self._username),
                                                                 ("password", self._password)])) + "\n", 'UTF-8'))
         elif key == "LOGIN_SUCCESS":
@@ -98,14 +101,19 @@ class Client(asynchat.async_chat):
             input("Press any key to start.")
             self._pygame_view = view.PygameView(self._event_manager)
             self.push(bytes("GAME_START\n", 'UTF-8'))
+        elif key == "GAME_OVER":
+            self._event_manager.post(events.GameOverEvent())
         self._received_data = ""
 
     def notify(self, event):
         if isinstance(event, events.QuitEvent):
+            self.push(bytes("QUIT\n",'UTF-8'))
             self.close()
         elif isinstance(event, events.MoveEvent):
             print("Message: {} sent".format(event.get_direction()))
             self.push(bytes("MOVE " + event.get_direction() + "\n", 'UTF-8'))
+        elif isinstance(event, events.RestartEvent):
+            self.push(bytes("RESTART\n", 'UTF-8'))
 
 
 def main():

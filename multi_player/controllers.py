@@ -12,7 +12,7 @@ class Controller:
     def notify(self, event):
         e = None
         if isinstance(event, events.GameOverEvent):
-            self._game_state = "game over"
+            self._game_state = "game_over"
         elif isinstance(event, events.ServerUpdateReceived):
             if self._game_state == "run":
                 # Handles input events
@@ -33,7 +33,7 @@ class Controller:
                     elif event.type == pygame.MOUSEBUTTONDOWN:
                         if event.button == 1:
                             e = events.MouseEvent(event.pos)
-            elif self._game_state == "game over":
+            elif self._game_state == "game_over":
                 for event in pygame.event.get():
                     if event.type == pygame.QUIT:
                         e = events.QuitEvent()
