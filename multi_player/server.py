@@ -72,6 +72,8 @@ class Server(asyncore.dispatcher):
         self._event_manager = eventManager
         self._game = game
         self._game_thread = game_thread
+        print("Server started.")
+        print("Waiting for connections...")
 
     def handle_accepted(self, sock, addr):
         print("Incoming conection from {}".format(repr(addr)))
@@ -86,7 +88,7 @@ def main():
         server = Server('localhost', 8000, eventManager, snake_game, game_thread)
         asyncore.loop(1)
     except:
-        pass
+        print("Error")
 
 
 if __name__ == '__main__':

@@ -21,7 +21,7 @@ def login_check(username, password):
         query.execute("SELECT * FROM Users WHERE username = ?", (username, ))
         check=query.fetchone()
         print("Login attempt from USERNAME: {}".format(password))
-        print_db()
+        # print_db()
 
         #if username does not exist, add to users table in db
         if check is None:
@@ -30,7 +30,7 @@ def login_check(username, password):
             salt = base64.b64encode(os.urandom(128)).decode('UTF-8')
             hashed_password = hashlib.sha512(bytes(password + salt, 'UTF-8')).hexdigest()
             query.execute("INSERT INTO Users VALUES(?, ?, ?, ?)", (username, hashed_password, salt, 0))
-            print_db()
+            # print_db()
             return 2
         else:
             #if username exists, check if pass correct
@@ -183,7 +183,7 @@ class Game:
         self._score = None
         self._is_running = True
         self._game_state = "run"
-        print_db()
+        # print_db()
 
     def run(self):
         while self._is_running:

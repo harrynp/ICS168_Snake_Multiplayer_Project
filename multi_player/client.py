@@ -117,10 +117,13 @@ class Client(asynchat.async_chat):
 
 
 def main():
-    eventManager = event_manager.EventManager()
-    controller = controllers.Controller(eventManager)
-    client = Client('localhost', 8000, eventManager)
-    asyncore.loop(timeout=1)
+    try:
+        eventManager = event_manager.EventManager()
+        controller = controllers.Controller(eventManager)
+        client = Client('localhost', 8000, eventManager)
+        asyncore.loop(timeout=1)
+    except:
+        pass
 
 if __name__ == "__main__":
     main()
