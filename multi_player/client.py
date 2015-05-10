@@ -9,39 +9,45 @@ import socket
 import json
 import hashlib
 
+import tkinter
+import tkinter.messagebox as messagebox
 
-# class Client(asyncore.dispatcher):
-#
-#     def __init__(self, host, port, eventManager, pygameView):
-#         asyncore.dispatcher.__init__(self)
-#         self.create_socket(socket.AF_INET, socket.SOCK_STREAM)
-#         self.connect((host, port))
-#         self.buffer = ""
-#         self._event_manager = eventManager
-#         self._event_manager.register_listener(self)
-#         self._pyagame_view = pygameView
-#
-#     def handle_connect(self):
-#         pass
-#
-#     def handle_close(self):
-#         self.close()
-#
-#     def handle_read(self):
-#         self._event_manager.post(events.ServerUpdateRecieved(self.recv(8192)))
-#
-#     def writable(self):
-#         return len(self.buffer) > 0
-#
-#     def handle_write(self):
-#         sent = self.send(self.buffer)
-#         self.buffer = self.buffer[sent:]
-#
-#     def notify(self, event):
-#         if isinstance(event, events.QuitEvent):
-#             self.close()
-#         elif isinstance(event, events.MoveEvent):
-#             self.buffer = event.get_direction()
+
+class Login:
+    def __init__(self):
+        self._login = tkinter.Tk()
+        self._usernameLabel = tkinter.Label(self._login, text = "Username:")
+        self._userEntry = tkinter.Entry(self._login)
+        self._passwordLabel = tkinter.Label(self._login, text = "Password:")
+        self._passEntry = tkinter.Entry(self._login, show="*")
+        self._connect = tkinter.Button(self._login, text = "Connect", command = self._connect)
+        self._usernameLabel.grid(row = 0, column = 0)
+        self._userEntry.grid(row = 0, column = 1)
+        self._passwordLabel.grid(row = 1, column = 0)
+        self._passEntry.grid(row = 1, column = 1)
+        self._connect.grid(row = 2, column = 1)
+        
+        self._username = ""
+        self._password = ""        
+
+        self._login.mainloop()
+
+    def _connect(self):
+        self._username = self._userEntry.get()
+        self._password = self._passEntry.get()
+        
+        self._login.destroy()
+
+    def _login_fail(self):
+        messagebox.showerror("Error", "Wrong Password!")
+        return True
+
+    def get_user(self):
+        type(self._username)
+        return self._username
+
+    def get_pass(self):
+        return self._password
 
 class Client(asynchat.async_chat):
 
@@ -55,14 +61,16 @@ class Client(asynchat.async_chat):
         self._received_data = ""
         self._pygame_view = None
         self._login_screen = True
-        self._username = ""
-        self._password = ""
-
+        
     def handle_connect(self):
-            self._username = input("Please enter username: ")
-            self._password = hashlib.sha512(bytes(input("Please enter password: "), 'UTF-8')).hexdigest()
-            print("Hashed Password: {}".format(self._password))
-            self.push(bytes("LOGIN_ATTEMPT " + json.dumps(dict([("username", self._username),
+        print("handle")
+        login = Login()
+        #self._username = input("Please enter username: ")
+        #self._password = hashlib.sha512(bytes(input("Please enter password: "), 'UTF-8')).hexdigest()
+        self._username = login.get_user()
+        self._password = hashlib.sha512(bytes(login.get_pass(), 'UTF-8')).hexdigest()
+        print("Hashed Password: {}".format(self._password))
+        self.push(bytes("LOGIN_ATTEMPT " + json.dumps(dict([("username", self._username),
                                                                 ("password", self._password)])) + "\n", 'UTF-8'))
 
     def collect_incoming_data(self, data):
@@ -77,28 +85,46 @@ class Client(asynchat.async_chat):
             data = split_string[1]
             self._event_manager.post(events.ServerUpdateReceived(data))
         elif key == "LOGIN_REQUEST":
-            self._username = input("Please enter username: ")
-            self._password = hashlib.sha512(bytes(input("Please enter password: "), 'UTF-8')).hexdigest()
+            print("login req")
+            login = Login()
+            self._username = login.get_user()
+            self._password = hashlib.sha512(bytes(login.get_pass(), 'UTF-8')).hexdigest()
+        
+            #self._username = input("Please enter username: ")
+            #self._password = hashlib.sha512(bytes(input("Please enter password: "), 'UTF-8')).hexdigest()
             print("Hashed Password: {}".format(self._password))
             self.push(bytes("LOGIN_ATTEMPT " + json.dumps(dict([("username", self._username),
                                                                 ("password", self._password)])) + "\n", 'UTF-8'))
         elif key == "LOGIN_FAIL":
             print("LOGIN FAILED")
-            self._username = input("Please enter username: ")
-            self._password = hashlib.sha512(bytes(input("Please enter password: "), 'UTF-8')).hexdigest()
+            root = tkinter.Tk()
+            root.withdraw()
+            messagebox.showerror("Error", "Wrong Password!")
+            root.destroy()
+            login = Login()
+            self._username = login.get_user()
+            self._password = hashlib.sha512(bytes(login.get_pass(), 'UTF-8')).hexdigest()
+            #self._username = input("Please enter username: ")
+            #self._password = hashlib.sha512(bytes(input("Please enter password: "), 'UTF-8')).hexdigest()
             print("Hashed Password: {}".format(self._password))
             self.push(bytes("LOGIN_ATTEMPT " + json.dumps(dict([("username", self._username),
                                                                 ("password", self._password)])) + "\n", 'UTF-8'))
         elif key == "LOGIN_SUCCESS":
             print("LOGIN SUCCESSFUL!")
             print("Welcome {}.".format(self._username))
-            input("Press any key to start.")
+            root = tkinter.Tk()
+            root.withdraw()
+            messagebox.showinfo("Welcome", "Press OK to start game!")
+            root.destroy()
             self._pygame_view = view.PygameView(self._event_manager)
             self.push(bytes("GAME_START\n", 'UTF-8'))
         elif key == "USER_CREATED":
             print("USER CREATED!")
             print("Welcome {}.".format(self._username))
-            input("Press any key to start.")
+            root = tkinter.Tk()
+            root.withdraw()
+            messagebox.showinfo("Welcome", "Press OK to start game!")
+            root.destroy()
             self._pygame_view = view.PygameView(self._event_manager)
             self.push(bytes("GAME_START\n", 'UTF-8'))
         elif key == "GAME_OVER":

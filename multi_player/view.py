@@ -31,13 +31,13 @@ class PygameView:
             game_state = game_data["game_state"]
             snake_surface = pygame.Surface(self._screen.get_size())
             for part in snakes:
-                snake_part = pygame.Rect(part[0], part[1], 15, 15)
+                snake_part = pygame.Rect(part[0]*20, part[1]*20, 20, 20)
                 pygame.draw.rect(snake_surface, white, snake_part)
             for pellet in pellets:
-                p = pygame.Rect(pellet[0], pellet[1], 15, 15)
-                pygame.draw.rect(snake_surface, white, p)
-            score_text = self._font.render("Current Score: " + str(scores[0]) + "    High Score: " + str(scores[1]), 1,
-                                           white)
+                pygame.draw.circle(snake_surface, white, (pellet[0] * 20 + 10, pellet[1] * 20 + 10), 5)
+                #p = pygame.Rect(pellet[0], pellet[1], 15, 15)
+                #pygame.draw.rect(snake_surface, white, p)
+            score_text = self._font.render("Current Score: " + str(scores[0]) + "    High Score: " + str(scores[1]), 1, white)
             score_text_pos = score_text.get_rect()
             score_text_pos.centerx = snake_surface.get_rect().centerx
             snake_surface.blit(score_text, score_text_pos)
