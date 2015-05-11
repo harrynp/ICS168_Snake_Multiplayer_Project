@@ -32,9 +32,13 @@ class GameOverEvent(Event):
 
 
 class MoveEvent(Event):
-    def __init__(self, direction):
+    def __init__(self, username, direction):
         self._name = "Move Event"
+        self._username = username
         self._direction = direction
+
+    def get_username(self):
+        return self._username
 
     def get_direction(self):
         return self._direction
@@ -67,17 +71,17 @@ class LoginRequest(Event):
         self._name = "Login Request"
 
 
-class LoginAttempt(Event):
-    def __init__(self, username, password):
-        self._name = "Login Attempt"
-        self._username = username
-        self._password = password
-
-    def get_username(self):
-        return self._username
-
-    def get_password(self):
-        return self._password
+# class LoginAttempt(Event):
+#     def __init__(self, username, password):
+#         self._name = "Login Attempt"
+#         self._username = username
+#         self._password = password
+#
+#     def get_username(self):
+#         return self._username
+#
+#     def get_password(self):
+#         return self._password
 
 
 class LoginSuccess(Event):
@@ -97,3 +101,28 @@ class UserCreated(Event):
 class GameStart(Event):
     def __init__(self):
         self._name = "Game Start"
+
+class JoinEvent(Event):
+    def __init__(self, username, color):
+        self._name = "Join Event"
+        self._username = username
+        self._color = color
+
+    def get_username(self):
+        return self._username
+
+    def get_color(self):
+        return self._color
+
+class LeaveGame(Event):
+    def __init__(self, username):
+        self._name = "Leave Game"
+        self._username = username
+
+class GameFull(Event):
+    def __init__(self):
+        self._name = "Game Full"
+
+class GameJoined(Event):
+    def __init__(self):
+        self._name = "Game Joined"

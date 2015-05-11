@@ -21,13 +21,13 @@ class Controller:
                         e = events.QuitEvent()
                     elif event.type == pygame.KEYDOWN:
                         if event.key == pygame.K_LEFT:
-                            e = events.MoveEvent("left")
+                            e = events.MoveEvent("", "left")
                         elif event.key == pygame.K_RIGHT:
-                            e = events.MoveEvent("right")
+                            e = events.MoveEvent("", "right")
                         elif event.key == pygame.K_UP:
-                            e = events.MoveEvent("up")
+                            e = events.MoveEvent("", "up")
                         elif event.key == pygame.K_DOWN:
-                            e = events.MoveEvent("down")
+                            e = events.MoveEvent("", "down")
                         # elif event.key == pygame.K_q:
                         #     e = events.QuitEvent()
                     elif event.type == pygame.MOUSEBUTTONDOWN:
