@@ -11,6 +11,7 @@ import hashlib
 
 import tkinter
 import tkinter.messagebox as messagebox
+#from tkinter import *
 
 
 class Login:
@@ -48,6 +49,41 @@ class Login:
 
     def get_pass(self):
         return self._password
+
+class Lobby:
+    def __init__(self, caller):
+        self._caller = caller
+
+        self._lobby = tkinter.Tk()
+        self._lobby.geometry('200x100')
+
+        self._create = tkinter.Button(self._lobby, text = "Create", command = self._create)
+        self._join = tkinter.Button(self._lobby, text = "Join", command = self._join)
+        self._entry = tkinter.Entry(self._lobby)
+        self._message = tkinter.Label(self._lobby, text = "Create a new game \n or Join an existing one!")
+        self._create.pack()
+        self._entry.pack()
+        self._join.pack()
+        self._message.pack()
+        self._lobby.mainloop()
+
+    def _create(self):
+        self._create.config(text = "Start", command = self._start)
+        self._caller.push(bytes("NEW_GAME" + "\n", 'UTF-8'))
+
+    def _start(self):
+        self._caller.push(bytes("GAME_START" + "\n", 'UTF-8'))
+        self._lobby.destroy()
+
+    def _join(self):
+        self._caller.push(bytes("JOIN_GAME " + self._entry.get() + "\n", 'UTF-8'))
+        self._lobby.destroy()
+
+
+
+
+
+
 
 class Client(asynchat.async_chat):
 
@@ -112,21 +148,26 @@ class Client(asynchat.async_chat):
         elif key == "LOGIN_SUCCESS":
             print("LOGIN SUCCESSFUL!")
             print("Welcome {}.".format(self._username))
-            root = tkinter.Tk()
-            root.withdraw()
-            messagebox.showinfo("Welcome", "Press OK to start game!")
-            root.destroy()
+
             self._pygame_view = view.PygameView(self._event_manager)
-            self.push(bytes("GAME_START\n", 'UTF-8'))
+            
+            lobby = Lobby(self)
+
+            #send_data = lobby.get_data()
+            #self.push(bytes(send_data + "\n", 'UTF-8'))
+            #if send_data == "NEW_GAME":
+            #    send_data = input("Input command: ")
+            #    self.push(bytes(send_data + "\n", 'UTF-8'))
+
+            #self.push(bytes("GAME_START\n", 'UTF-8'))
         elif key == "USER_CREATED":
             print("USER CREATED!")
             print("Welcome {}.".format(self._username))
-            root = tkinter.Tk()
-            root.withdraw()
-            messagebox.showinfo("Welcome", "Press OK to start game!")
-            root.destroy()
+
             self._pygame_view = view.PygameView(self._event_manager)
-            self.push(bytes("GAME_START\n", 'UTF-8'))
+            
+            lobby = Lobby(self)
+
         elif key == "GAME_OVER":
             self._event_manager.post(events.GameOverEvent())
         self._received_data = ""
@@ -137,7 +178,8 @@ class Client(asynchat.async_chat):
             self.close()
         elif isinstance(event, events.MoveEvent):
             print("Message: {} sent".format(event.get_direction()))
-            self.push(bytes("MOVE " + event.get_direction() + "\n", 'UTF-8'))
+            self.push(bytes("MOVE " + json.dumps(dict([("username", self._username),
+                                                       ("direction", event.get_direction())])) + "\n", 'UTF-8'))
         elif isinstance(event, events.RestartEvent):
             self.push(bytes("RESTART\n", 'UTF-8'))
 

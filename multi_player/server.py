@@ -109,15 +109,16 @@ class MessageHandler(asynchat.async_chat):
                                                        ("clients", [self]),
                                                        ("event_manager", self._event_manager)])
             self._game_thread = threading.Thread(target=self._game_sessions[self._game_id]["game"].run)
-            # self._event_manager.post(events.JoinEvent(self._username, "white"))
+            self._event_manager.post(events.JoinEvent(self._username, "white"))
         elif key == "JOIN_GAME":
             data = split_string[1]
+            print(data)
             # json_data = json.loads(data)
             self._game_id = data
             self._game_sessions[data]["clients"].append(self)
             self._event_manager = self._game_sessions[data]["event_manager"]
             self._event_manager.register_listener(self)
-            # self._event_manager.post(events.JoinEvent(self._username, "white"))
+            self._event_manager.post(events.JoinEvent(self._username, "white"))
         elif key == "GAME_START":
             self._game_thread.start()
         elif key == "QUIT":
