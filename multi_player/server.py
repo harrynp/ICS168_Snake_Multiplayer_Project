@@ -122,7 +122,8 @@ class MessageHandler(asynchat.async_chat):
         elif key == "GAME_START":
             self._game_thread.start()
         elif key == "QUIT":
-            self._event_manager.post(events.QuitEvent(), self._username)
+            print(key)
+            self._event_manager.post(events.QuitEvent(self._username))
         elif key == "RESTART":
             self._event_manager.post(events.RestartEvent())
         self._received_data = ""

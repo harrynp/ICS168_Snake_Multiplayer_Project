@@ -16,7 +16,7 @@ class TickEvent(Event):
 
 
 class QuitEvent(Event):
-    def __init__(self, username):
+    def __init__(self, username=""):
         self._name = "Program Quit Event"
         self._username = username
 
