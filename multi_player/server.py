@@ -73,6 +73,7 @@ class MessageHandler(asynchat.async_chat):
 
     def handle_close(self):
         self._event_manager.post(events.LeaveGame(self._username))
+        self.close()
         
 
     def collect_incoming_data(self, data):
