@@ -251,7 +251,8 @@ class Game:
 
     def notify(self, event):
         if isinstance(event, events.QuitEvent):
-            self._is_running = False
+            # self._is_running = False
+            pass
         elif isinstance(event, events.GameOverEvent):
             #self._score.save_high_score()
             self._game_state = "game_over"
