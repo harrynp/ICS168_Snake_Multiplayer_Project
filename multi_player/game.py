@@ -76,9 +76,31 @@ class Snake:
     def add_part(self, pos):
         self._body.insert(0, pos)
 
+    def del_body(self):
+        del_count = len(self._body) - 1
+        self._body = self._body[:1]
+        print(del_count)
+        return del_count
+
+    def del_parts(self, pos):
+        del_count = len(self._body[self._body.index(pos, 1):])
+        self._body = self._body[:self._body.index(pos, 1)]
+        print(del_count)
+        return del_count
+
+    def reverse_dir(self):
+        if self._direction == "left":
+            self._direction = "right"
+        elif self._direction == "right":
+            self._direction = "left"
+        elif self._direction == "up":
+            self._direction = "down"
+        elif self._direction == "down":
+            self._direction = "up"
+
     def change_dir(self, direction):
         if not (self._direction == "left" and direction == "right" or self._direction == "right" and direction == "left" or self._direction == "up" and direction == "down" or self._direction == "down" and direction == "up"):
-                self._direction = direction
+            self._direction = direction
 
     def update(self):
                 
@@ -99,6 +121,7 @@ class Player:
         #self._pos = pos
         self._name = name
         self._color = color
+        self._score = 0
         self._alive = True
 
     #def get_pos(self):
@@ -109,6 +132,15 @@ class Player:
 
     def get_color(self):
         return self._color
+
+    def get_score(self):
+        return self._score
+
+    def increment_score(self):
+        self._score += 1
+
+    def update_score(self, score):
+        self._score = score
 
     def get_alive(self):
         return self._alive
@@ -131,11 +163,11 @@ class Game:
         self._clock = pygame.time.Clock()
         self._players = []
         self._snakes = []
-        self._avail_snakes = [Snake(20, 20, "up"), Snake(10, 20, "right"), Snake(20, 10, "left"), Snake(10, 10, "down")]
+        self._avail_snakes = [Snake(25, 25, "up"), Snake(5, 25, "right"), Snake(25, 5, "left"), Snake(5, 5, "down")]
         #self._snakes.append(Snake(20, 15, "down"))
         #self._snakes.append(Snake(400, 300, "down", self._event_manager))
         self._pellets = []
-        self._pellets = [Pellet(randint(1, 39), randint(1, 29))]
+        self._pellets = [Pellet(randint(1, 29), randint(1, 29))]
         #self._pellets.append(pygame.Rect(randint(2, 53) * 15, randint(2, 39) * 15, 15, 15))
         self._borders = [pygame.Rect(0, 0, 2, 600), pygame.Rect(0, 0, 800, 2), pygame.Rect(798, 0, 2, 600), pygame.Rect(0, 598, 800, 2)]
         #self._score = None
@@ -145,17 +177,32 @@ class Game:
 
     def run(self):
         self._spawn_snakes()
+        pellet_timer = 0
         while self._is_running:
             self._clock.tick(10)
             if self._game_state == "run":
+                pellet_timer += 1
                 for idx, snake in enumerate(self._snakes):
-                    if self._collideBorder(snake) or self._collideSelf(snake):
-                        self._players[idx].set_alive(False)
+                    if self._collideBorder(snake):
+                        for p in range(int(snake.del_body()/2)):
+                            self._spawn_pellet(Pellet(randint(1, 29), randint(1, 29)))
+                        snake.reverse_dir()
+                        self._players[idx].update_score(0)
+                    #if self._collideSelf(snake):
+                    #    for p in range(int(snake.del_parts(snake.get_head())/2)):
+                    #        self._spawn_pellet(Pellet(randint(1, 29), randint(1, 29)))
+                    #    self._players[idx].update_score(len(snake.get_body()) - 1)
+                        #self._players[idx].set_alive(False)
                         #self._event_manager.post(events.GameOverEvent())
+                    if self._collideBody(snake):
+                        pass
                     if self._collidePellet(snake):
-                        self._spawn_pellet(Pellet(randint(1, 39), randint(1, 29)))
-                        #self._score.increment_current_score()
-                    #snake.update()
+                        self._players[idx].increment_score()
+                    snake.update()
+                if pellet_timer == 25:
+                    self._spawn_pellet(Pellet(randint(1, 29), randint(1, 29)))
+                    pellet_timer = 0
+
             self._event_manager.post(events.TickEvent())
 
     def _add_player(self, name, color):
@@ -182,7 +229,7 @@ class Game:
     def _collideBorder(self, snake):
         x = snake.get_head()[0]
         y = snake.get_head()[1]
-        if x < 0 or x > 39 or y < 0 or y > 29:
+        if x < 0 or x > 29 or y < 0 or y > 29:
             return True
         return False
 
@@ -191,6 +238,16 @@ class Game:
             if segment == snake.get_head():
                 return True
         return False
+
+    def _collideBody(self, attacker):
+        for idx, snake in enumerate(self._snakes):
+            for segment in snake.get_body()[1:]:
+                if segment == attacker.get_head():
+                    for p in range(int(snake.del_parts(segment)/2)):
+                        self._spawn_pellet(Pellet(randint(1, 29), randint(1, 29)))
+                    self._players[idx].update_score(len(snake.get_body()) - 1)
+
+
 
     def notify(self, event):
         if isinstance(event, events.QuitEvent):
@@ -203,7 +260,7 @@ class Game:
                 name = player.get_name()
                 if player.get_name() == event.get_username():
                     self._snakes[idx].change_dir(event.get_direction())
-                    self._snakes[idx].update()
+                    #self._snakes[idx].update()
         elif isinstance(event, events.RestartEvent):
             self._snakes.clear()
             self._snakes.append(Snake(20, 15, "down"))
@@ -240,8 +297,14 @@ class Game:
         snake_list = []
         for snake in self._snakes:
             snake_list.append(snake.get_body())
+        player_list = []
+        for player in self._players:
+            player_list.append([player.get_name(), player.get_color(), player.get_score()])
+        while len(player_list) < 4:
+            player_list.append(["N/A", "white", 0])
+
         json_string = json.dumps(dict([("snakes", snake_list),
                                        ("pellets", self.get_pellets_pos()),
-                                       #("scores", self._score.get_scores()),
+                                       ("players", player_list),
                                        ("game_state", self._game_state)]))
         return json_string

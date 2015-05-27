@@ -15,28 +15,30 @@ import tkinter.messagebox as messagebox
 
 
 class Login:
-    def __init__(self):
+    def __init__(self, caller):
+        self._caller = caller
+
         self._login = tkinter.Tk()
         self._usernameLabel = tkinter.Label(self._login, text = "Username:")
         self._userEntry = tkinter.Entry(self._login)
         self._passwordLabel = tkinter.Label(self._login, text = "Password:")
         self._passEntry = tkinter.Entry(self._login, show="*")
-        self._connect = tkinter.Button(self._login, text = "Connect", command = self._connect)
+        self._connectButton = tkinter.Button(self._login, text = "Connect", command = self._connect)
         self._usernameLabel.grid(row = 0, column = 0)
         self._userEntry.grid(row = 0, column = 1)
         self._passwordLabel.grid(row = 1, column = 0)
         self._passEntry.grid(row = 1, column = 1)
-        self._connect.grid(row = 2, column = 1)
+        self._connectButton.grid(row = 2, column = 1)
         
+        self._passEntry.bind('<Return>', self._connect)
         self._username = ""
-        self._password = ""        
 
         self._login.mainloop()
 
-    def _connect(self):
+    def _connect(self, *args):
         self._username = self._userEntry.get()
-        self._password = self._passEntry.get()
-        
+        self._caller.push(bytes("LOGIN_ATTEMPT " + json.dumps(dict([("username", self._username),
+                                                                ("password", hashlib.sha512(bytes(self._passEntry.get(), 'UTF-8')).hexdigest())])) + "\n", 'UTF-8'))
         self._login.destroy()
 
     def _login_fail(self):
@@ -44,11 +46,8 @@ class Login:
         return True
 
     def get_user(self):
-        type(self._username)
         return self._username
 
-    def get_pass(self):
-        return self._password
 
 class Lobby:
     def __init__(self, caller):
@@ -80,11 +79,6 @@ class Lobby:
         self._lobby.destroy()
 
 
-
-
-
-
-
 class Client(asynchat.async_chat):
 
     def __init__(self, host, port, eventManager):
@@ -97,17 +91,12 @@ class Client(asynchat.async_chat):
         self._received_data = ""
         self._pygame_view = None
         self._login_screen = True
+
+        self._username = ""
         
     def handle_connect(self):
-        print("handle")
-        login = Login()
-        #self._username = input("Please enter username: ")
-        #self._password = hashlib.sha512(bytes(input("Please enter password: "), 'UTF-8')).hexdigest()
+        login = Login(self)
         self._username = login.get_user()
-        self._password = hashlib.sha512(bytes(login.get_pass(), 'UTF-8')).hexdigest()
-        print("Hashed Password: {}".format(self._password))
-        self.push(bytes("LOGIN_ATTEMPT " + json.dumps(dict([("username", self._username),
-                                                                ("password", self._password)])) + "\n", 'UTF-8'))
 
     def collect_incoming_data(self, data):
         self._received_data += data.decode('UTF-8')
@@ -121,51 +110,22 @@ class Client(asynchat.async_chat):
             data = split_string[1]
             self._event_manager.post(events.ServerUpdateReceived(data))
         elif key == "LOGIN_REQUEST":
-            print("login req")
-            login = Login()
+            login = Login(self)
             self._username = login.get_user()
-            self._password = hashlib.sha512(bytes(login.get_pass(), 'UTF-8')).hexdigest()
-        
-            #self._username = input("Please enter username: ")
-            #self._password = hashlib.sha512(bytes(input("Please enter password: "), 'UTF-8')).hexdigest()
-            print("Hashed Password: {}".format(self._password))
-            self.push(bytes("LOGIN_ATTEMPT " + json.dumps(dict([("username", self._username),
-                                                                ("password", self._password)])) + "\n", 'UTF-8'))
         elif key == "LOGIN_FAIL":
             print("LOGIN FAILED")
             root = tkinter.Tk()
             root.withdraw()
             messagebox.showerror("Error", "Wrong Password!")
             root.destroy()
-            login = Login()
+            login = Login(self)
             self._username = login.get_user()
-            self._password = hashlib.sha512(bytes(login.get_pass(), 'UTF-8')).hexdigest()
-            #self._username = input("Please enter username: ")
-            #self._password = hashlib.sha512(bytes(input("Please enter password: "), 'UTF-8')).hexdigest()
-            print("Hashed Password: {}".format(self._password))
-            self.push(bytes("LOGIN_ATTEMPT " + json.dumps(dict([("username", self._username),
-                                                                ("password", self._password)])) + "\n", 'UTF-8'))
         elif key == "LOGIN_SUCCESS":
-            print("LOGIN SUCCESSFUL!")
-            print("Welcome {}.".format(self._username))
-
             self._pygame_view = view.PygameView(self._event_manager)
-            
             lobby = Lobby(self)
 
-            #send_data = lobby.get_data()
-            #self.push(bytes(send_data + "\n", 'UTF-8'))
-            #if send_data == "NEW_GAME":
-            #    send_data = input("Input command: ")
-            #    self.push(bytes(send_data + "\n", 'UTF-8'))
-
-            #self.push(bytes("GAME_START\n", 'UTF-8'))
         elif key == "USER_CREATED":
-            print("USER CREATED!")
-            print("Welcome {}.".format(self._username))
-
             self._pygame_view = view.PygameView(self._event_manager)
-            
             lobby = Lobby(self)
 
         elif key == "GAME_OVER":
