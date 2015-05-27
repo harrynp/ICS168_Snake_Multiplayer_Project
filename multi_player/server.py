@@ -174,6 +174,8 @@ class Server(asyncore.dispatcher):
         self.listen(5)
         self._game_sessions = game_sessions
         print("Server started.")
+        print("IP address is {}.".format(host))
+        print("Port is {}.".format(port))
         print("Waiting for connections...")
 
     def handle_accepted(self, sock, addr):
@@ -182,8 +184,13 @@ class Server(asyncore.dispatcher):
 
 
 def main():
+    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    s.connect(('8.8.8.8', 80))
+    my_ip = s.getsockname()[0]
+    s.close()
     eventManager = event_manager.EventManager()
-    server = Server('localhost', 8000, game_sessions)
+    server = Server(my_ip, 8000, game_sessions)
+    # server = Server('localhost', 8000, game_sessions)
     asyncore.loop(timeout=1, map=clients)
 
 

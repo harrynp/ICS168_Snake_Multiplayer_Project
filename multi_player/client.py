@@ -144,11 +144,25 @@ class Client(asynchat.async_chat):
             self.push(bytes("RESTART\n", 'UTF-8'))
 
 
+def check_ip_addr(ip_addr):
+    try:
+        socket.inet_pton(socket.AF_INET, ip_addr)
+        return True
+    except socket.error:
+        return False
+
 def main():
     try:
         eventManager = event_manager.EventManager()
+        ip_addr = ""
+        while not check_ip_addr(ip_addr):
+            ip_addr = input("Please input server's IP address: ")
+        port = ""
+        while not port.isdigit():
+            port = input("Please input server's port: ")
         controller = controllers.Controller(eventManager)
-        client = Client('localhost', 8000, eventManager)
+        client = Client(ip_addr, int(port), eventManager)
+        # client = Client('localhost', 8000, eventManager)
         asyncore.loop(timeout=1)
     except:
         pass
