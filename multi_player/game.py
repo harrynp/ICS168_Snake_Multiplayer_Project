@@ -79,13 +79,11 @@ class Snake:
     def del_body(self):
         del_count = len(self._body) - 1
         self._body = self._body[:1]
-        print(del_count)
         return del_count
 
     def del_parts(self, pos):
         del_count = len(self._body[self._body.index(pos, 1):])
         self._body = self._body[:self._body.index(pos, 1)]
-        print(del_count)
         return del_count
 
     def reverse_dir(self):
@@ -148,6 +146,12 @@ class Player:
     def set_alive(self, state):
         self._alive = state
 
+    def set_dead(self):
+        self._name = "LEFT"
+        self._color = "white"
+        self._score = 0
+        self._alive = False
+
 
 '''POSSIBLE SNAKES
 Snake(10, 10, "down")
@@ -183,22 +187,23 @@ class Game:
             if self._game_state == "run":
                 pellet_timer += 1
                 for idx, snake in enumerate(self._snakes):
-                    if self._collideBorder(snake):
-                        for p in range(int(snake.del_body()/2)):
-                            self._spawn_pellet(Pellet(randint(1, 29), randint(1, 29)))
-                        snake.reverse_dir()
-                        self._players[idx].update_score(0)
-                    #if self._collideSelf(snake):
-                    #    for p in range(int(snake.del_parts(snake.get_head())/2)):
-                    #        self._spawn_pellet(Pellet(randint(1, 29), randint(1, 29)))
-                    #    self._players[idx].update_score(len(snake.get_body()) - 1)
-                        #self._players[idx].set_alive(False)
-                        #self._event_manager.post(events.GameOverEvent())
-                    if self._collideBody(snake):
-                        pass
-                    if self._collidePellet(snake):
-                        self._players[idx].increment_score()
-                    snake.update()
+                    if self._players[idx].get_alive():
+                        if self._collideBorder(snake):
+                            for p in range(int(snake.del_body()/2)):
+                                self._spawn_pellet(Pellet(randint(1, 29), randint(1, 29)))
+                            snake.reverse_dir()
+                            self._players[idx].update_score(0)
+                        #if self._collideSelf(snake):
+                        #    for p in range(int(snake.del_parts(snake.get_head())/2)):
+                        #        self._spawn_pellet(Pellet(randint(1, 29), randint(1, 29)))
+                        #    self._players[idx].update_score(len(snake.get_body()) - 1)
+                            #self._players[idx].set_alive(False)
+                            #self._event_manager.post(events.GameOverEvent())
+                        if self._collideBody(snake):
+                            pass
+                        if self._collidePellet(snake):
+                            self._players[idx].increment_score()
+                        snake.update()
                 if pellet_timer == 25:
                     self._spawn_pellet(Pellet(randint(1, 29), randint(1, 29)))
                     pellet_timer = 0
@@ -207,6 +212,11 @@ class Game:
 
     def _add_player(self, name, color):
         self._players.append(Player(name, color))
+
+    def _remove_player(self, name):
+        for idx, player in enumerate(self._players):
+            if player.get_name() == name:
+                player.set_dead()
 
     def _spawn_pellet(self, pellet):
         self._pellets.append(pellet)
@@ -241,18 +251,25 @@ class Game:
 
     def _collideBody(self, attacker):
         for idx, snake in enumerate(self._snakes):
-            for segment in snake.get_body()[1:]:
-                if segment == attacker.get_head():
-                    for p in range(int(snake.del_parts(segment)/2)):
-                        self._spawn_pellet(Pellet(randint(1, 29), randint(1, 29)))
-                    self._players[idx].update_score(len(snake.get_body()) - 1)
+            if self._players[idx].get_alive():
+                for segment in snake.get_body()[1:]:
+                    if segment == attacker.get_head():
+                        for p in range(int(snake.del_parts(segment)/2)):
+                            self._spawn_pellet(Pellet(randint(1, 29), randint(1, 29)))
+                        self._players[idx].update_score(len(snake.get_body()) - 1)
+            else:
+                snake.add_part((30, 30))
+                for segment in snake.get_body():
+                    if segment == attacker.get_head():
+                        for p in range(int(snake.del_parts(segment)/2)):
+                            self._spawn_pellet(Pellet(randint(1, 29), randint(1, 29)))
 
 
 
     def notify(self, event):
         if isinstance(event, events.QuitEvent):
+            self._remove_player(event.get_username())
             # self._is_running = False
-            pass
         elif isinstance(event, events.GameOverEvent):
             #self._score.save_high_score()
             self._game_state = "game_over"
@@ -270,6 +287,9 @@ class Game:
             
         elif isinstance(event, events.JoinEvent):
             self._add_player(event.get_username(), event.get_color())
+
+        elif isinstance(event, events.LeaveGame):
+            self._remove_player(event.get_username())
 
     def get_snakes(self):
         return self._snakes

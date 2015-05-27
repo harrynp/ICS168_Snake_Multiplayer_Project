@@ -16,7 +16,7 @@ class TickEvent(Event):
 
 
 class QuitEvent(Event):
-    def __init__(self, username=""):
+    def __init__(self, username):
         self._name = "Program Quit Event"
         self._username = username
 
@@ -122,6 +122,9 @@ class LeaveGame(Event):
     def __init__(self, username):
         self._name = "Leave Game"
         self._username = username
+
+    def get_username(self):
+        return self._username
 
 class GameFull(Event):
     def __init__(self):

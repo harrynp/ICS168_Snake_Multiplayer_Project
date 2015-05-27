@@ -72,8 +72,8 @@ class MessageHandler(asynchat.async_chat):
         self._received_data = ""
 
     def handle_close(self):
-        # self._event_manager.post(events.LeaveGame(self._username))
-        pass
+        self._event_manager.post(events.LeaveGame(self._username))
+        
 
     def collect_incoming_data(self, data):
         self._received_data += data.decode('UTF-8')
@@ -122,8 +122,7 @@ class MessageHandler(asynchat.async_chat):
         elif key == "GAME_START":
             self._game_thread.start()
         elif key == "QUIT":
-            print(key)
-            self._event_manager.post(events.QuitEvent(self._username))
+            self._event_manager.post(events.QuitEvent(), self._username)
         elif key == "RESTART":
             self._event_manager.post(events.RestartEvent())
         self._received_data = ""
