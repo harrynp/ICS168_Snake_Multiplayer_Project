@@ -1,7 +1,7 @@
 # ICS168_Snake_Multiplayer_Project
 Multiplayer Project from ICS 168
 
-Steps to play with 2 players:
+Steps to play with 2 players:  
 1. Open server and copy the IP address and port  
 2. Open client and enter IP address and port of the server  
 3. Login with a user  
