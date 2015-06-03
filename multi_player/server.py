@@ -17,7 +17,7 @@ clients = {}
 game_sessions = {}
 colors = ["red", "green", "blue", "yellow"]
 
-db = lite.connect('login.db')
+db = lite.connect('login.db', check_same_thread=False)
 query = db.cursor()
 
 

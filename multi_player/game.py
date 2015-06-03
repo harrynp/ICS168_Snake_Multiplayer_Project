@@ -8,7 +8,7 @@ import hashlib
 import base64
 import os
 
-db = lite.connect('login.db')
+db = lite.connect('login.db', check_same_thread=False)
 query = db.cursor()
 
 class Pellet:
@@ -147,7 +147,7 @@ class Game:
         #self._score = None
         self._is_running = True
         self._game_state = "run"
-        self._game_timer = 1000
+        self._game_timer = 100
         # print_db()
 
     def run(self):
@@ -189,6 +189,7 @@ class Game:
                 if player.get_score() > winner.get_score():
                     winner = player
         query.execute("UPDATE Users SET h_score = h_score + 1 WHERE username = ?", (winner.get_name(), ))
+        print(winner.get_name())
 
 
     def _add_player(self, name, color):
