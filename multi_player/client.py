@@ -19,6 +19,9 @@ class Login:
         self._caller = caller
 
         self._login = tkinter.Tk()
+        self._login.title("Login")
+        self._login.geometry('190x70')
+        self._center(self._login)
         self._usernameLabel = tkinter.Label(self._login, text = "Username:")
         self._userEntry = tkinter.Entry(self._login)
         self._passwordLabel = tkinter.Label(self._login, text = "Password:")
@@ -34,6 +37,15 @@ class Login:
         self._username = ""
 
         self._login.mainloop()
+
+    def _center(self, toplevel):
+        toplevel.update_idletasks()
+        w = toplevel.winfo_screenwidth()
+        h = toplevel.winfo_screenheight()
+        size = tuple(int(_) for _ in toplevel.geometry().split('+')[0].split('x'))
+        x = w/2 - size[0]/2
+        y = h/2 - size[1]/2
+        toplevel.geometry("%dx%d+%d+%d" % (size + (x, y)))
 
     def _connect(self, *args):
         self._username = self._userEntry.get()
@@ -52,23 +64,37 @@ class Login:
 class Lobby:
     def __init__(self, caller):
         self._caller = caller
-
         self._lobby = tkinter.Tk()
-        self._lobby.geometry('200x100')
+        self._lobby.geometry('200x150')
+        self._center(self._lobby)
+
+        self._welcomeLabel = tkinter.Label(self._lobby, text = "Welcome " + caller._username + "!")
 
         self._create = tkinter.Button(self._lobby, text = "Create", command = self._create)
         self._join = tkinter.Button(self._lobby, text = "Join", command = self._join)
         self._entry = tkinter.Entry(self._lobby)
-        self._message = tkinter.Label(self._lobby, text = "Create a new game \n or Join an existing one!")
+        self._message = tkinter.Label(self._lobby, text = "Create a new game \n or Join an existing one \n by typing in a username!")
+        self._welcomeLabel.pack()
         self._create.pack()
         self._entry.pack()
         self._join.pack()
         self._message.pack()
         self._lobby.mainloop()
 
+    def _center(self, toplevel):
+        toplevel.update_idletasks()
+        w = toplevel.winfo_screenwidth()
+        h = toplevel.winfo_screenheight()
+        size = tuple(int(_) for _ in toplevel.geometry().split('+')[0].split('x'))
+        x = w/2 - size[0]/2
+        y = h/2 - size[1]/2
+        toplevel.geometry("%dx%d+%d+%d" % (size + (x, y)))
+
     def _create(self):
         self._create.config(text = "Start", command = self._start)
+        self._join.config(state = 'disable')
         self._caller.push(bytes("NEW_GAME" + "\n", 'UTF-8'))
+        self._message.config(text = "New game created \n press Start when ready to play!")
 
     def _start(self):
         self._caller.push(bytes("GAME_START" + "\n", 'UTF-8'))

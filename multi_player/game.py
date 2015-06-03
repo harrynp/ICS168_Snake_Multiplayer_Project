@@ -8,39 +8,8 @@ import hashlib
 import base64
 import os
 
-class Score:
-
-    def __init__(self, username):
-        self._username = username
-        self._current_score = 0
-        self._high_score = get_hscore(self._username)[0]
-        # self._high_score = 0
-        self._high_score_changed = False
-
-    def save_high_score(self):
-        if self._high_score_changed:
-            # update_hscore(self._username, self._current_score)
-            pass
-
-    def get_high_score(self):
-        return self._high_score
-
-    def get_current_score(self):
-        return self._current_score
-
-    def get_scores(self):
-        return [self._current_score, self._high_score]
-
-    def increment_current_score(self):
-        self._current_score += 1
-        if self._current_score > self._high_score:
-            self._high_score = self._current_score
-            self._high_score_changed = True
-
-    def reset_score(self):
-        self._current_score = 0
-        self._high_score_changed = False
-
+db = lite.connect('login.db')
+query = db.cursor()
 
 class Pellet:
     def __init__(self, x, y):
@@ -145,6 +114,7 @@ class Player:
 
     def set_alive(self, state):
         self._alive = state
+	
 
     def set_dead(self):
         self._name = "LEFT"
@@ -177,21 +147,24 @@ class Game:
         #self._score = None
         self._is_running = True
         self._game_state = "run"
+        self._game_timer = 1000
         # print_db()
 
     def run(self):
         self._spawn_snakes()
         pellet_timer = 0
-        while self._is_running:
+        while self._game_timer:
+            self._game_timer -= 1
             self._clock.tick(10)
             if self._game_state == "run":
                 pellet_timer += 1
                 for idx, snake in enumerate(self._snakes):
                     if self._players[idx].get_alive():
+                        snake.update()
                         if self._collideBorder(snake):
                             for p in range(int(snake.del_body()/2)):
                                 self._spawn_pellet(Pellet(randint(1, 29), randint(1, 29)))
-                            snake.reverse_dir()
+                            #snake.reverse_dir()
                             self._players[idx].update_score(0)
                         #if self._collideSelf(snake):
                         #    for p in range(int(snake.del_parts(snake.get_head())/2)):
@@ -203,12 +176,20 @@ class Game:
                             pass
                         if self._collidePellet(snake):
                             self._players[idx].increment_score()
-                        snake.update()
                 if pellet_timer == 25:
                     self._spawn_pellet(Pellet(randint(1, 29), randint(1, 29)))
                     pellet_timer = 0
 
             self._event_manager.post(events.TickEvent())
+        winner = None
+        for player in self._players:
+            if winner == None:
+                winner = player
+            else:
+                if player.get_score() > winner.get_score():
+                    winner = player
+        query.execute("UPDATE Users SET h_score = h_score + 1 WHERE username = ?", (winner.get_name(), ))
+
 
     def _add_player(self, name, color):
         self._players.append(Player(name, color))
@@ -239,7 +220,17 @@ class Game:
     def _collideBorder(self, snake):
         x = snake.get_head()[0]
         y = snake.get_head()[1]
-        if x < 0 or x > 29 or y < 0 or y > 29:
+        if x < 0:
+            snake._direction = "right"
+            return True
+        if x > 29:
+            snake._direction = "left"
+            return True
+        if y < 0:
+            snake._direction = "down"
+            return True
+        if y > 29:
+            snake._direction = "up"
             return True
         return False
 
@@ -327,5 +318,5 @@ class Game:
         json_string = json.dumps(dict([("snakes", snake_list),
                                        ("pellets", self.get_pellets_pos()),
                                        ("players", player_list),
-                                       ("game_state", self._game_state)]))
+                                       ("game_timer", self._game_timer)]))
         return json_string
