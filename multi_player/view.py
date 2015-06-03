@@ -93,3 +93,6 @@ class PygameView:
             pygame.display.flip()
         elif isinstance(event, events.QuitEvent):
             pygame.display.quit()
+        elif isinstance(event, events.GameOverEvent):
+            pygame.time.delay(5000)
+            pygame.display.quit()

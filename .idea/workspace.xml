@@ -2,9 +2,12 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="663af283-d0bb-4a2d-8c06-d77dd00bd12a" name="Default" comment="">
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/multi_player/login.db-journal" afterPath="$PROJECT_DIR$/multi_player/login.db-journal" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/multi_player/login.db" afterPath="$PROJECT_DIR$/multi_player/login.db" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/multi_player/game.py" afterPath="$PROJECT_DIR$/multi_player/game.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/multi_player/server.py" afterPath="$PROJECT_DIR$/multi_player/server.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/multi_player/view.py" afterPath="$PROJECT_DIR$/multi_player/view.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="ICS168_Snake_Multiplayer_Project.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -40,8 +43,8 @@
       <file leaf-file-name="game.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/multi_player/game.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.25663716">
-              <caret line="190" column="81" selection-start-line="190" selection-start-column="81" selection-end-line="190" selection-end-column="81" />
+            <state vertical-scroll-proportion="0.30088496">
+              <caret line="149" column="31" selection-start-line="149" selection-start-column="31" selection-end-line="149" selection-end-column="31" />
               <folding>
                 <element signature="e#21#34#0" expanded="true" />
               </folding>
@@ -53,7 +56,7 @@
         <entry file="file://$PROJECT_DIR$/multi_player/server.py">
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.0">
-              <caret line="37" column="38" selection-start-line="37" selection-start-column="38" selection-end-line="37" selection-end-column="38" />
+              <caret line="168" column="52" selection-start-line="168" selection-start-column="52" selection-end-line="168" selection-end-column="52" />
               <folding />
             </state>
           </provider>
@@ -63,7 +66,7 @@
         <entry file="file://$PROJECT_DIR$/multi_player/client.py">
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.0">
-              <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+              <caret line="160" column="0" selection-start-line="160" selection-start-column="0" selection-end-line="160" selection-end-column="0" />
               <folding />
             </state>
           </provider>
@@ -73,7 +76,7 @@
         <entry file="file://$PROJECT_DIR$/multi_player/view.py">
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.0">
-              <caret line="94" column="31" selection-start-line="94" selection-start-column="27" selection-end-line="94" selection-end-column="31" />
+              <caret line="94" column="0" selection-start-line="94" selection-start-column="0" selection-end-line="94" selection-end-column="0" />
               <folding>
                 <element signature="e#21#34#0" expanded="true" />
               </folding>
@@ -107,7 +110,7 @@
         <entry file="file://$PROJECT_DIR$/multi_player/events.py">
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.0">
-              <caret line="8" column="23" selection-start-line="8" selection-start-column="23" selection-end-line="8" selection-end-column="23" />
+              <caret line="26" column="10" selection-start-line="26" selection-start-column="6" selection-end-line="26" selection-end-column="10" />
               <folding />
             </state>
           </provider>
@@ -132,13 +135,13 @@
         <option value="$PROJECT_DIR$/multi_player/main.py" />
         <option value="$PROJECT_DIR$/single_player/main.py" />
         <option value="$PROJECT_DIR$/multi_player/event_manager.py" />
-        <option value="$PROJECT_DIR$/multi_player/view.py" />
         <option value="$PROJECT_DIR$/multi_player/test_client.py" />
         <option value="$PROJECT_DIR$/multi_player/controllers.py" />
         <option value="$PROJECT_DIR$/multi_player/events.py" />
         <option value="$PROJECT_DIR$/multi_player/client.py" />
         <option value="$PROJECT_DIR$/multi_player/lobby.py" />
         <option value="$PROJECT_DIR$/multi_player/server.py" />
+        <option value="$PROJECT_DIR$/multi_player/view.py" />
         <option value="$PROJECT_DIR$/multi_player/game.py" />
       </list>
     </option>
@@ -887,16 +890,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/multi_player/view.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="94" column="31" selection-start-line="94" selection-start-column="27" selection-end-line="94" selection-end-column="31" />
-          <folding>
-            <element signature="e#21#34#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/multi_player/controllers.py">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
@@ -907,26 +900,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/multi_player/events.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="8" column="23" selection-start-line="8" selection-start-column="23" selection-end-line="8" selection-end-column="23" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://C:/Python34/Lib/asyncore.py">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="9.731171">
           <caret line="514" column="16" selection-start-line="514" selection-start-column="0" selection-end-line="515" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/multi_player/client.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -945,6 +922,40 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/multi_player/events.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="26" column="10" selection-start-line="26" selection-start-column="6" selection-end-line="26" selection-end-column="10" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/multi_player/client.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="160" column="0" selection-start-line="160" selection-start-column="0" selection-end-line="160" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/multi_player/server.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="168" column="52" selection-start-line="168" selection-start-column="52" selection-end-line="168" selection-end-column="52" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/multi_player/view.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="94" column="0" selection-start-line="94" selection-start-column="0" selection-end-line="94" selection-end-column="0" />
+          <folding>
+            <element signature="e#21#34#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/single_player/main.py">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
@@ -955,18 +966,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/multi_player/server.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="37" column="38" selection-start-line="37" selection-start-column="38" selection-end-line="37" selection-end-column="38" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/multi_player/game.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.25663716">
-          <caret line="190" column="81" selection-start-line="190" selection-start-column="81" selection-end-line="190" selection-end-column="81" />
+        <state vertical-scroll-proportion="0.30088496">
+          <caret line="149" column="31" selection-start-line="149" selection-start-column="31" selection-end-line="149" selection-end-column="31" />
           <folding>
             <element signature="e#21#34#0" expanded="true" />
           </folding>
